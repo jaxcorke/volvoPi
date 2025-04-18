@@ -50,7 +50,19 @@ class TopBarFrame(customtkinter.CTkFrame):
         self.wifi_symbol.pack(pady=3,padx=(10,0),side="left")
         self.wifi_symbol_status = customtkinter.CTkLabel(self,fg_color="gray",height=34,width=10,corner_radius=4,text="")
         self.wifi_symbol_status.pack(pady=6,padx=2,side="left")
-                  
+
+        self.bluetooth_symbol_image = customtkinter.CTkImage(dark_image=Image.open(".\\assets\\bluetoothSymbol.jpg"), size=(36,36))
+        self.bluetooth_symbol = customtkinter.CTkLabel(self, image=self.bluetooth_symbol_image,text="")
+        self.bluetooth_symbol.pack(pady=3,padx=(10,0),side="left")
+        self.bluetooth_symbol_status = customtkinter.CTkLabel(self,fg_color="gray",height=34,width=10,corner_radius=4,text="")
+        self.bluetooth_symbol_status.pack(pady=6,padx=2,side="left")
+
+        self.gps_symbol_image = customtkinter.CTkImage(dark_image=Image.open(".\\assets\\gpsSymbol.jpg"), size=(36,36))
+        self.gps_symbol = customtkinter.CTkLabel(self, image=self.gps_symbol_image,text="")
+        self.gps_symbol.pack(pady=3,padx=(10,0),side="left")
+        self.gps_symbol_status = customtkinter.CTkLabel(self,fg_color="gray",height=34,width=10,corner_radius=4,text="")
+        self.gps_symbol_status.pack(pady=6,padx=2,side="left")
+              
 class HomeFrame(customtkinter.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
@@ -58,7 +70,7 @@ class HomeFrame(customtkinter.CTkFrame):
         self.configure(width=1024,height=573,bg_color="black",fg_color="transparent",border_width=2,border_color="blue")
 
         self.clock_frame = customtkinter.CTkFrame(self,bg_color="black",fg_color="black",height=120,width=200)
-        self.clock_frame.pack(side="top",pady=10) 
+        self.clock_frame.place(relx=0.5,y=6,anchor="n") 
 
         self.clock_frame.clock = customtkinter.CTkLabel(master=self.clock_frame, height=40,width=100,
         text="__:__",bg_color="transparent",fg_color="transparent",text_color="white",font=("CTkFont",72),anchor="s")
@@ -78,7 +90,7 @@ class ExitMenuFrame(customtkinter.CTkFrame):
      def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
 
-        self.configure(corner_radius=20,fg_color="gray10",bg_color="black")
+        self.configure(corner_radius=20,fg_color="gray10",bg_color="gray4")
 
         self.exit_menu_prompt = customtkinter.CTkLabel(self, width=580,height=100,text="Are you sure you want to exit?",font=("CTkFont",34))
         self.exit_menu_prompt.configure(corner_radius=12,fg_color="gray10",text_color="white")
@@ -91,6 +103,51 @@ class ExitMenuFrame(customtkinter.CTkFrame):
         self.exit_menu_exit_button = customtkinter.CTkButton(self, width=110,height=120,text="Exit",command=exitConfirmExit,fg_color="dark red")
         self.exit_menu_exit_button.configure(font=("CTkFont",34))
         self.exit_menu_exit_button.pack(padx=20,pady=30,fill="x",side="right",expand=True,anchor="s")
+
+class HomePanelLeft(customtkinter.CTkFrame):
+     def __init__(self, master, **kwargs):
+        super().__init__(master, **kwargs)
+
+        self.configure(fg_color="gray4",bg_color="black",corner_radius=20,width=250)
+
+        self.home_button = customtkinter.CTkButton(self, width=210,fg_color="blue",bg_color="gray4",text="Home",font=("CTkFont",32),text_color="White")
+        self.home_button.pack(pady=(20,10),padx=20,fill="y",expand=True)
+
+        self.vehicle_button = customtkinter.CTkButton(self, width=210,fg_color="blue",bg_color="gray4",text="Vehicle",font=("CTkFont",32),text_color="White")
+        self.vehicle_button.pack(pady=(10,10),padx=20,fill="y",expand=True)
+
+        self.cam_button = customtkinter.CTkButton(self, width=210,fg_color="blue",bg_color="gray4",text="Cam",font=("CTkFont",32),text_color="White")
+        self.cam_button.pack(pady=(10,10),padx=20,fill="y",expand=True)
+
+        self.menu_button = customtkinter.CTkButton(self, width=210,fg_color="blue",bg_color="gray4",text="Menu",font=("CTkFont",32),text_color="White")
+        self.menu_button.pack(pady=(10,10),padx=20,fill="y",expand=True)
+
+class HomePanelRight(customtkinter.CTkFrame):
+     def __init__(self, master, **kwargs):
+        super().__init__(master, **kwargs)
+
+        self.configure(fg_color="gray4",bg_color="black",corner_radius=20,width=250)
+
+        self.climate_label = customtkinter.CTkLabel(self, fg_color="gray4",bg_color="gray4",text_color="white",text="Climate:",justify="left",font=("CTkFont",42))
+        self.climate_label.place(y=6,x=12)
+
+        self.fan_label = customtkinter.CTkLabel(self,fg_color="gray4",bg_color="gray4",text="Fan:            000%"
+        ,text_color="white",font=("CTkFont",28),width=238,justify="left")
+        self.fan_label.pack(pady=(60,16),padx=(12,0))
+
+        self.temp_label = customtkinter.CTkLabel(self,fg_color="gray4",bg_color="gray4",text="Temp:         -000%"
+        ,text_color="white",font=("CTkFont",28),width=238,justify="left")
+        self.temp_label.pack(pady=(0,16),padx=(12,0))
+
+        self.ac_label = customtkinter.CTkLabel(self,fg_color="gray4",bg_color="gray4",text="A/C:               ???"
+        ,text_color="white",font=("CTkFont",28),width=238,justify="left")
+        self.ac_label.pack(pady=(0,16),padx=(12,0))
+
+        self.compressor_label = customtkinter.CTkLabel(self,fg_color="gray4",bg_color="gray4",text="Compressor:  ???"
+        ,text_color="white",font=("CTkFont",28),width=238,justify="left")
+        self.compressor_label.pack(pady=(0,16),padx=(12,0))
+
+
 
 #WINDOW        
 class App(customtkinter.CTk):
@@ -108,6 +165,12 @@ class App(customtkinter.CTk):
         
         self.home_frame = HomeFrame(master=self)
         self.home_frame.pack(pady=0, fill = "both",expand=True)
+
+        self.home_panel_left = HomePanelLeft(master=self.home_frame)
+        self.home_panel_left.pack(padx=10,pady=(10,10),side="left",fill="y")
+
+        self.home_panel_right = HomePanelRight(master=self.home_frame)
+        self.home_panel_right.pack(padx=10,pady=(10,10),side="right",fill="y")
 
         self.exit_menu = ExitMenuFrame(master=self)
 

@@ -1,3 +1,4 @@
+print("Start volvoPi...")
 #Imports custom
 import gui
 import data
@@ -19,7 +20,7 @@ os_name = "unknown"
 
 #identify os
 os_name = sys.platform
-print("OS: " + os_name)
+print("Identified OS: " + os_name)
 
 #APP functions
 def get_wifi_status(os_name):
