@@ -1,0 +1,13 @@
+Infotainment unit    
+    Raspberry Pi 4, 4GB
+    Dual-ch CAN hat (MCP2515)
+    1024x600 Touchscreen Display (HDMI, USB)
+    5v USB power supply
+    PwrMngt MCU
+
+Power Management Box
+    Batteries
+    BMS
+    Relays
+    DC-DC Buck Module(s)
+    MCU
