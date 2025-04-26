@@ -80,12 +80,13 @@ def guiUpdate():
         update_clock()
         update_internet_status()
         update_wifi_status()
-        time.sleep(0.5)
+        time.sleep(0.1)
 
 thread_gui = threading.Thread(target=guiUpdate)
 
 #Startup tasks
 print("Starting app.mainloop...")
+gui.set_message_text("Welcome!","green")
 mainloop_running = True
 thread_gui.start()
 
