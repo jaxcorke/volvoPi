@@ -1,2 +1,5 @@
 Manjaro ARM minimal
+autologin
+X
 DWM window manager
+autostart patch
