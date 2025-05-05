@@ -13,6 +13,9 @@ os_name = sys.platform
 background_gray = "gray8"
 
 #assets paths
+if os.path.basename(os.getcwd()) == "src":
+    os.chdir("..")
+
 internet_symbol_path = os.path.join(os.getcwd(),"assets","webSymbol.png")
 wifi_symbol_path = os.path.join(os.getcwd(),"assets","wifiSymbol.jpg")
 bluetooth_symbol_path = os.path.join(os.getcwd(),"assets","bluetoothSymbol.jpg")
@@ -413,3 +416,4 @@ def update_loop():
 
 root.after(100, update_loop)
 
+root.mainloop()
