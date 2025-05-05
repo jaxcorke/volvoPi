@@ -381,6 +381,7 @@ class App(customtkinter.CTk):
         self.geometry("1024x600")
         self.maxsize(width=1920,height=1080)
         self.minsize(width=1024,height=600)
+        self.attributes("-fullscreen", True)
 
         self.top_bar = TopBarFrame(self)
         self.top_bar.pack(fill = "x")
