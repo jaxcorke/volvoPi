@@ -416,4 +416,4 @@ def update_loop():
 
 root.after(100, update_loop)
 
-root.mainloop()
+#root.mainloop()
