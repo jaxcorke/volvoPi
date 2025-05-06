@@ -8,6 +8,7 @@ import threading
 import sys
 import os
 import subprocess
+import serial
 
 #identify os
 os_name = sys.platform
@@ -18,10 +19,9 @@ mainloop_running = False
 ignition = True
 reverse = False
 
-
 #Startup tasks
 print("Starting root.mainloop...")
-gui.root.top_bar.set_message("Welcome!","green")
+gui.root.top_bar.set_message("Welcome! Identified OS: " + os_name,"green")
 
 #Start GUI mainloop
 mainloop_running = True
