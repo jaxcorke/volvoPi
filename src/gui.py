@@ -11,11 +11,15 @@ import os
 import requests
 import threading
 import subprocess
+import psutil
 
 #GLOBAL VARIABLES <START>........................................................   
 versionTagString = "volvoPi"
 os_name = sys.platform
-background_gray = "gray8"
+
+#Colors
+background_gray = "#141414"
+background_gray_2 = "#292929"
  
 #ASSET PATHS <START>........................................................ 
 
@@ -105,8 +109,10 @@ def get_wifi_status(os_name):
             return(False)
         
     elif os_name == "linux":
-        return(False)
-    
+        try:
+            pass
+        except:
+            return(False)
     else:
         return(False)
 
@@ -186,13 +192,13 @@ class TopBarFrame(customtkinter.CTkFrame):
 
     def set_gps_state(self, state):
         if state:
-            self.gps_symbol_status.configure(fg_color="green")
+            self.gps_symbol_status.configure(fg_color=background_gray_2)
         else:
             self.gps_symbol_status.configure(fg_color="red")
 
     def set_bluetooth_state(self, state):
         if state:
-            self.bluetooth_symbol_status.configure(fg_color="green")
+            self.bluetooth_symbol_status.configure(fg_color=background_gray_2)
         else:
             self.bluetooth_symbol_status.configure(fg_color="red")
 
@@ -236,7 +242,7 @@ class ButtonPanelFrame(customtkinter.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
 
-        self.configure(fg_color=background_gray,bg_color="black",corner_radius=12,width=250)
+        self.configure(fg_color=background_gray,bg_color="black",corner_radius=10,width=250)
 
         self.home_button = customtkinter.CTkButton(self, width=210,fg_color="blue",text="",bg_color=background_gray,command=home_button_press, image=home_icon,hover=False)
         self.home_button.pack(pady=(20,10),padx=20,fill="y",expand=True)
@@ -258,16 +264,20 @@ class MainFrame(customtkinter.CTkFrame):
             def __init__(self, master, **kwargs):
                 super().__init__(master, **kwargs)
 
-                self.configure(fg_color=background_gray,bg_color="black",corner_radius=12)
+                self.configure(fg_color=background_gray,bg_color="black",corner_radius=10,width=450)
                 self.grid_columnconfigure(0, weight=1)
-                self.grid_columnconfigure(1,weight=0)
+                self.grid_columnconfigure(1,weight=1)
+                self.grid_rowconfigure(0,weight=0)
 
                 #Climate
                 self.climate_label_frame = customtkinter.CTkFrame(self,border_width=2,border_color="blue",bg_color=background_gray,corner_radius=6,fg_color=background_gray)
+                self.climate_label_frame.configure(width=313)
+                self.climate_label_frame.rowconfigure(0, weight=1)
                 self.climate_label_frame.grid(column=0,row=0,columnspan=2,sticky="ew",padx=0,pady=0)
+                
 
                 self.climate_label = customtkinter.CTkLabel(self.climate_label_frame, fg_color=background_gray,bg_color=background_gray,
-                                                            text_color="white",text="Climate:",anchor="w",font=("CTkFont",42))
+                                                            text_color="white",text="Climate:",anchor="w",font=("CTkFont",42),width=250)
                 self.climate_label.pack(pady=4,padx=8,side="left")
 
                 #Fan
@@ -387,10 +397,10 @@ class MainFrame(customtkinter.CTkFrame):
             self.menu_serial.configure(image=serial_icon,compound="top")
             self.menu_serial.grid(column=1,row=1,padx=10,pady=10,sticky="nsew")
 
-            self.menu_show_screen = customtkinter.CTkButton(self, text="Show Screens",bg_color="transparent",fg_color="blue",font=("CTkFont",24),command=None,hover=False)
+            self.menu_show_screen = customtkinter.CTkButton(self, text="Screens",bg_color="transparent",fg_color="blue",font=("CTkFont",24),command=None,hover=False)
             self.menu_show_screen.grid(column=0,row=2,padx=(20,10),pady=10,sticky="nsew")
 
-            self.menu_quick_settings_frame = customtkinter.CTkFrame(self,bg_color=background_gray,fg_color="gray16")
+            self.menu_quick_settings_frame = customtkinter.CTkFrame(self,bg_color=background_gray,fg_color=background_gray_2)
             self.menu_quick_settings_frame.grid(column=3,row=0,rowspan=4,pady=10,padx=10,sticky="nsew")
 
     class SubmenusFrame(customtkinter.CTkFrame):
@@ -410,49 +420,135 @@ class MainFrame(customtkinter.CTkFrame):
                 self.connections_label.pack()
 
         class DebugFrame(customtkinter.CTkFrame):
+
+            class PerformanceFrame(customtkinter.CTkFrame):
+                def __init__(self, master, **kwargs):
+                    super().__init__(master, **kwargs)
+                    self.configure(fg_color=background_gray_2,bg_color=background_gray_2,corner_radius=10)
+                    self.columnconfigure(1,weight=1)
+
+                    self.performance_label = customtkinter.CTkLabel(self,bg_color=background_gray_2,fg_color=background_gray_2,text="Performance:",anchor="w",text_color="white")
+                    self.performance_label.configure(font=("CTkFont",24))
+                    self.performance_label.grid(column=0,row=0,sticky="new",columnspan=3,pady=(0,6))
+
+                    self.cpu_usage_label = customtkinter.CTkLabel(self, text="CPU:",fg_color=background_gray_2,bg_color=background_gray_2,anchor="w",text_color="white")
+                    self.cpu_usage_label.configure(font=("CTkFont",18))
+                    self.cpu_usage_label.grid(column=0, row=1,sticky="w",padx=(10,20))
+
+                    self.cpu_percent_value = customtkinter.CTkLabel(self, text="??",fg_color=background_gray_2,bg_color=background_gray_2,anchor="w",text_color="white")
+                    self.cpu_percent_value.configure(font=("CTkFont",18))
+                    self.cpu_percent_value.grid(column=1, row=1,sticky="w")
+
+                    self.cpu_freq_value = customtkinter.CTkLabel(self, text="??",fg_color=background_gray_2,bg_color=background_gray_2,anchor="w",text_color="white")
+                    self.cpu_freq_value.configure(font=("CTkFont",18))
+                    self.cpu_freq_value.grid(column=2, row=1,sticky="e")
+
+                    self.memory_usage_label = customtkinter.CTkLabel(self, text="RAM:",fg_color=background_gray_2,bg_color=background_gray_2,anchor="w",text_color="white")
+                    self.memory_usage_label.configure(font=("CTkFont",18))
+                    self.memory_usage_label.grid(column=0, row=2,sticky="w",padx=(10,20))
+
+                    self.memory_percent_value = customtkinter.CTkLabel(self, text="??",fg_color=background_gray_2,bg_color=background_gray_2,anchor="w",text_color="white")
+                    self.memory_percent_value.configure(font=("CTkFont",18))
+                    self.memory_percent_value.grid(column=1, row=2,sticky="w")
+
+                    self.memory_fraction_value = customtkinter.CTkLabel(self, text="??",fg_color=background_gray_2,bg_color=background_gray_2,anchor="w",text_color="white")
+                    self.memory_fraction_value.configure(font=("CTkFont",18))
+                    self.memory_fraction_value.grid(column=2, row=2,sticky="e")
+
+                    self.disk_usage_label = customtkinter.CTkLabel(self, text="Disk:",fg_color=background_gray_2,bg_color=background_gray_2,anchor="w",text_color="white")
+                    self.disk_usage_label.configure(font=("CTkFont",18))
+                    self.disk_usage_label.grid(column=0, row=3,sticky="w",padx=(10,20))
+
+                    self.disk_percent_value = customtkinter.CTkLabel(self, text="??",fg_color=background_gray_2,bg_color=background_gray_2,anchor="w",text_color="white")
+                    self.disk_percent_value.configure(font=("CTkFont",18))
+                    self.disk_percent_value.grid(column=1, row=3,sticky="w")
+
+                    self.disk_fraction_value = customtkinter.CTkLabel(self, text="??",fg_color=background_gray_2,bg_color=background_gray_2,anchor="w",text_color="white")
+                    self.disk_fraction_value.configure(font=("CTkFont",18))
+                    self.disk_fraction_value.grid(column=2, row=3,sticky="e")
+
+
+                def update_cpu(self):
+                    self.cpu_percent_value.configure(text=str((psutil.cpu_percent(1))) + "%")
+                    self.cpu_freq_value.configure(text= "(" + (str(int(psutil.cpu_freq()[0])/1000) + "GHz)"))
+
+                def update_memory(self):
+                    self.memory_percent_value.configure(text=str(psutil.virtual_memory().percent) + "%")  
+                    self.memory_fraction_value.configure(text= "(" + str(round((psutil.virtual_memory().total - psutil.virtual_memory().available)/(1024**3),1)) + "/" + str(round(((psutil.virtual_memory().total)/(1024**3)),1)) + " GB)")
+
+                def update_disk(self):
+                    disk_value_percent = str(psutil.disk_usage(os.path.join('/')).percent) + "%"
+                    disk_value_fraction = "(" + str(round((psutil.disk_usage(os.path.join('/')).used / 1024**3),1)) + "/" + str(int((psutil.disk_usage((os.path.join('/'))).total / 1024**3))) + "GB)"
+                    self.disk_percent_value.configure(text=disk_value_percent)
+                    self.disk_fraction_value.configure(text=disk_value_fraction)
+
+                def update_performance(self):
+                    self.update_cpu()
+                    self.update_memory()
+                    self.update_disk()
+
+            class ThreadingFrame(customtkinter.CTkFrame):
+                def __init__(self, master, **kwargs):
+                    super().__init__(master, **kwargs)
+                    self.configure(fg_color=background_gray_2,bg_color=background_gray_2)
+                    self.columnconfigure(0, weight=1)
+
+                    self.threading_label = customtkinter.CTkLabel(self,bg_color=background_gray_2,fg_color=background_gray_2,text="Active Threads:",anchor="w",text_color="white")
+                    self.threading_label.configure(font=("CTkFont",24))
+                    self.threading_label.grid(column=0,row=0,sticky="new")
+
+                    self.threading_count = customtkinter.CTkLabel(self,bg_color=background_gray_2,fg_color=background_gray_2,text="?",anchor="w",text_color="white")
+                    self.threading_count.configure(font=("CTkFont",20))
+                    self.threading_count.grid(column=1,row=0,sticky="nw",padx=(0,5))
+
+                    self.threading_list = customtkinter.CTkTextbox(self, bg_color=background_gray_2, fg_color=background_gray,activate_scrollbars=True,text_color="white",height=100)
+                    self.threading_list.grid(column=0,row=1,sticky="new",columnspan=2)
+
+                def show_threads(self):
+                    self.threading_count.configure(text= "(" + str(threading.active_count()) + ")")
+                    self.threading_list.configure(state="normal")
+                    self.threading_list.delete(0.0, 'end')
+
+                    for thread in threading.enumerate():
+                        thread_entry = str(thread.native_id) + ": " + str(thread.name)
+                        self.threading_list.insert('end', thread_entry + "\n")
+                    
+                    self.threading_list.insert('end', "\n")
+                    self.threading_list.configure(state="disabled")
+
             def __init__(self, master, **kwargs):
                 super().__init__(master, **kwargs)
                 self.configure(bg_color="black",fg_color=background_gray,corner_radius=10)
-                self.columnconfigure(0, weight=1)
-                self.columnconfigure(1, weight=1)
-                self.rowconfigure(0, weight=0)
+                self.columnconfigure(0, weight=1, uniform="equal")
+                self.columnconfigure(1, weight=1,uniform="equal")
                 self.rowconfigure(1, weight=1)
 
-                self.debug_label = customtkinter.CTkLabel(self, text="Debug & Sys Info:",bg_color=background_gray,fg_color="gray16",font=("CTkFont",28),text_color="white",anchor="w")
+                self.debug_label = customtkinter.CTkLabel(self, text="Debug & Sys Info:",bg_color=background_gray,fg_color=background_gray_2,font=("CTkFont",30),text_color="white",anchor="w")
                 self.debug_label.configure(corner_radius=6)
-                self.debug_label.grid(column=0,row=0,sticky="new",columnspan=2,padx=10,pady=(10,0))
+                self.debug_label.grid(column=0,row=0,sticky="nsew",columnspan=2,padx=10,pady=(10,0))
 
-                self.left_frame = customtkinter.CTkFrame(self, bg_color=background_gray,fg_color="gray16",corner_radius=6)
+                #Left Panel
+                self.left_frame = customtkinter.CTkFrame(self, bg_color=background_gray,fg_color=background_gray_2,corner_radius=6)
+                self.performance_frame = self.PerformanceFrame(self.left_frame)
+                self.performance_frame.pack(side="top",fill="x",padx=10,pady=(10,0))
+                self.threading_frame = self.ThreadingFrame(self.left_frame)
+                self.threading_frame.pack(side="top",fill="x",padx=10,pady=(10,0))
+
                 self.left_frame.grid(column=0,row=1,pady=10,padx=10,sticky="nsew")
-                self.left_frame.columnconfigure(0,weight=0)
-                self.left_frame.columnconfigure(1,weight=1)
-                self.left_frame.rowconfigure(1,weight=1)
 
-                self.threading_label = customtkinter.CTkLabel(self.left_frame,bg_color="gray16",fg_color="gray16",text="Active Threads:",anchor="w",text_color="white")
-                self.threading_label.configure(font=("CTkFont",18))
-                self.threading_label.grid(column=0,row=0,sticky="ew",padx=(14,0),pady=3)
+                #Right Panel
+                self.right_frame = customtkinter.CTkFrame(self, bg_color=background_gray,fg_color=background_gray_2,corner_radius=6)
 
-                self.threading_count = customtkinter.CTkLabel(self.left_frame,bg_color="gray16",fg_color="gray16",text="?",anchor="w",text_color="white")
-                self.threading_count.configure(font=("CTkFont",18))
-                self.threading_count.grid(column=1,row=0,sticky="w",padx=3,pady=3)
-
-                self.threading_list = customtkinter.CTkTextbox(self.left_frame, bg_color="gray16", fg_color=background_gray,activate_scrollbars=True,text_color="white",height=100)
-                self.threading_list.grid(column=0,row=1,sticky="new",padx=6,columnspan=2)
-
-                self.right_frame = customtkinter.CTkFrame(self, bg_color=background_gray,fg_color="gray16",corner_radius=6)
                 self.right_frame.grid(column=1,row=1,pady=10,padx=10,sticky="nsew")
 
-            def show_threads(self):
-                self.threading_count.configure(text= "(" + str(threading.active_count()) + ")")
-                self.threading_list.configure(state="normal")
-                self.threading_list.delete(0.0, 'end')
-
-                for thread in threading.enumerate():
-                    thread_entry = str(thread.native_id) + ": " + str(thread.name)
-                    self.threading_list.insert('end', thread_entry + "\n")
-                
-                self.threading_list.insert('end', "\n")
-                self.threading_list.configure(state="disabled")
+            def update_debug(self):
+                while(True):
+                    if root.main_frame.submenus_frame.debug_frame.winfo_ismapped():
+                        self.threading_frame.show_threads()
+                        self.performance_frame.update_performance()
+                        time.sleep(0.2)
+                    else:
+                        time.sleep(0.5)
 
         class CANFrame(customtkinter.CTkFrame):
             def __init__(self, master, **kwargs):
@@ -574,7 +670,7 @@ class App(customtkinter.CTk):
         self.main_frame = MainFrame(self.background)
         self.main_frame.pack(padx=(10,10),pady=10,fill="both",expand=True,anchor="center",side="left")
 
-        self.top_bar.set_message("Welcome!","green")
+        self.top_bar.set_message("Welcome!",background_gray_2)
 
 root = App()
 #WINDOW <END>........................................................
@@ -583,18 +679,18 @@ root = App()
 top_bar_thread = threading.Thread(target=root.top_bar.update_top_bar, daemon=True, name="top_bar_thread")
 top_bar_thread.start()
 
+debug_thread = threading.Thread(target=root.main_frame.submenus_frame.debug_frame.update_debug, daemon=True, name="update_debug")
+debug_thread.start()
+
 #mainloop tasks
 
-def update_loop():
-
+def main_loop():
+    #Home>Clock
     if root.main_frame.home_frame.winfo_ismapped():
         root.main_frame.home_frame.clock.update_clock()
 
-    if root.main_frame.submenus_frame.debug_frame.winfo_ismapped():
-        root.main_frame.submenus_frame.debug_frame.show_threads()
+    root.after(20, main_loop)
 
-    root.after(20, update_loop)
-
-root.after(20, update_loop)
+root.after(20, main_loop)
 
 #<END>................................................................................................................

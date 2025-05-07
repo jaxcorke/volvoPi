@@ -1,11 +1,7 @@
-import serial
-import serial.tools.list_ports
+import subprocess
 
-com_ports = list(serial.tools.list_ports.comports())
-
-for port in com_ports:
-    print(port)
-
-
+output = subprocess.check_output("iwctl station wlan0 show")
+decoded_output = output.decode("utf-8")
+print(decoded_output)
 
 
