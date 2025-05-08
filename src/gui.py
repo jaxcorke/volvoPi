@@ -12,6 +12,8 @@ import requests
 import threading
 import subprocess
 import psutil
+import tkintermapview
+import cv2
 
 #GLOBAL VARIABLES <START>........................................................   
 versionTagString = "volvoPi"
@@ -20,7 +22,7 @@ os_name = sys.platform
 #Colors
 background_gray = "#292929"
 background_gray_2 = "#474747"
- 
+
 #ASSET PATHS <START>........................................................ 
 
 if os.path.basename(os.getcwd()) == "src":
@@ -84,6 +86,7 @@ def vehicle_button_press():
 
 def cam_button_press():
     root.main_frame.close_all()
+    root.main_frame.cam_frame.pack(fill="both",expand=True)
 
 def menu_button_press():
     root.main_frame.close_all()
@@ -122,6 +125,31 @@ def get_internet_status():
         return True
     except (requests.ConnectionError, requests.Timeout):
         return False
+
+#Camera
+camera = cv2.VideoCapture(0)
+
+def camera_loop():
+    while(True):
+        while(root.main_frame.cam_frame.winfo_ismapped()): 
+            if camera.isOpened():
+                ret, new_frame = camera.read()
+                if ret:
+                    flipped_frame = cv2.flip(new_frame, 1)
+                    rgb_frame = cv2.cvtColor(flipped_frame, cv2.COLOR_BGR2RGB)
+                    pil_img = Image.fromarray(rgb_frame) 
+
+                    img_width_real, img_height_real = pil_img.size
+                    real_aspect_ratio = img_width_real/img_height_real
+
+                    camera_ctk = customtkinter.CTkImage(dark_image=pil_img,size=(img_width_real,img_height_real))
+                    root.main_frame.cam_frame.cam_image_label.configure(image=camera_ctk)
+                    root.main_frame.cam_frame.cam_image_label.pack(fill="both",expand=True,padx=10,pady=(0,10))
+                    last_frame = camera_ctk
+                time.sleep(1/60)
+            else:
+                camera.open(0)
+        time.sleep(0)
 
 #GLOBAL FUNCTIONS <END>........................................................ 
 
@@ -361,6 +389,15 @@ class MainFrame(customtkinter.CTkFrame):
     class CamFrame(customtkinter.CTkFrame):
         def __init__(self, master, **kwargs):
             super().__init__(master, **kwargs)
+            self.configure(bg_color="black",fg_color=background_gray)
+            self.columnconfigure(0, weight=1)
+            self.rowconfigure(1, weight=1)
+
+            self.cam_label = customtkinter.CTkLabel(self, text="Camera", font=("Arial",28),text_color="white",fg_color=background_gray_2,bg_color=background_gray)
+            self.cam_label.configure(corner_radius=6)
+            self.cam_label.pack(side="top",padx=10,pady=10,fill="x")
+
+            self.cam_image_label = customtkinter.CTkLabel(self, text="", image=None, bg_color=background_gray,fg_color="green")
 
     class MenuFrame(customtkinter.CTkFrame):
         def __init__(self, master, **kwargs):
@@ -475,6 +512,7 @@ class MainFrame(customtkinter.CTkFrame):
                     self.temp_value.configure(font=("Arial",18))
                     self.temp_value.grid(column=1, row=4,sticky="w")
 
+                    self.update_performance()
 
                 def update_cpu(self):
                     self.cpu_percent_value.configure(text=str((psutil.cpu_percent(1))) + "%")
@@ -516,8 +554,10 @@ class MainFrame(customtkinter.CTkFrame):
                     self.threading_count.configure(font=("Arial",20))
                     self.threading_count.grid(column=1,row=0,sticky="nw",padx=(0,5))
 
-                    self.threading_list = customtkinter.CTkTextbox(self, bg_color=background_gray_2, fg_color=background_gray,activate_scrollbars=True,text_color="white",height=100)
+                    self.threading_list = customtkinter.CTkTextbox(self, bg_color=background_gray_2, fg_color=background_gray,activate_scrollbars=True,text_color="white",height=150)
                     self.threading_list.grid(column=0,row=1,sticky="new",columnspan=2)
+
+                    self.show_threads()
 
                 def show_threads(self):
                     self.threading_count.configure(text= "(" + str(threading.active_count()) + ")")
@@ -582,9 +622,26 @@ class MainFrame(customtkinter.CTkFrame):
         class MapFrame(customtkinter.CTkFrame):
             def __init__(self, master, **kwargs):
                 super().__init__(master, **kwargs)
+                self.configure(bg_color="black",fg_color=background_gray,corner_radius=10)
+                self.rowconfigure(0, weight=0)
+                self.rowconfigure(1, weight=1)
+                self.columnconfigure(0, weight=1)
 
-                self.map_label = customtkinter.CTkLabel(self, text="map")
-                self.map_label.pack()
+                self.map_label = customtkinter.CTkLabel(self, text="Map & Locations",font=("Arial",30), fg_color=background_gray_2,bg_color=background_gray)
+                self.map_label.configure(text_color="white",corner_radius=10)
+                self.map_label.grid(column=0,row=0,sticky="ew",padx=6,pady=(6,0))
+
+            def create_map(self):
+                self.map_widget = tkintermapview.TkinterMapView(self,corner_radius=10,bg_color=background_gray)
+                #Default Postition (LSU, Baton Rouge, LA)
+                self.map_widget.set_position(30.41, -91.18)
+                self.map_widget.grid(column=0,row=1,sticky="nsew",padx=10,pady=10)
+
+            def destroy_map(self):
+                try:
+                    self.map_widget.destroy()
+                except:
+                    pass
 
         def __init__(self, master, **kwargs):
             super().__init__(master, **kwargs)
@@ -603,6 +660,7 @@ class MainFrame(customtkinter.CTkFrame):
             self.can_frame.pack_forget()
             self.serial_frame.pack_forget()
             self.map_frame.pack_forget()
+            self.map_frame.destroy_map()
 
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
@@ -653,8 +711,9 @@ class MainFrame(customtkinter.CTkFrame):
 
     def open_map(self):
         self.close_all()
-        self.submenus_frame.pack()
-        self.submenus_frame.map_frame.pack()
+        self.submenus_frame.map_frame.create_map()
+        self.submenus_frame.pack(fill="both",expand=True)
+        self.submenus_frame.map_frame.pack(fill="both",expand=True)
 
 #Show Screens
 
@@ -667,9 +726,9 @@ class App(customtkinter.CTk):
         super().__init__()
         self.title("volvoPi")
         self.geometry("1024x600")
-        self.maxsize(width=1920,height=1080)
-        self.minsize(width=1024,height=600)
-        #self.attributes("-fullscreen", True)
+        #self.maxsize(width=1920,height=1080)
+        #self.minsize(width=1024,height=600)
+        self.attributes("-fullscreen", True)
 
         self.top_bar = TopBarFrame(self)
         self.top_bar.pack(fill = "x")
@@ -690,12 +749,19 @@ class App(customtkinter.CTk):
 root = App()
 #WINDOW <END>........................................................
 
+#root.main_frame.submenus_frame.debug_frame.threading_frame.show_threads()
+#root.main_frame.submenus_frame.debug_frame.performance_frame.update_performance()
+
+
 #Threads
 top_bar_thread = threading.Thread(target=root.top_bar.update_top_bar, daemon=True, name="top_bar_thread")
 top_bar_thread.start()
 
 debug_thread = threading.Thread(target=root.main_frame.submenus_frame.debug_frame.update_debug, daemon=True, name="update_debug")
 debug_thread.start()
+
+camera_thread = threading.Thread(target=camera_loop, daemon=True, name="camera")
+camera_thread.start()
 
 #mainloop tasks
 

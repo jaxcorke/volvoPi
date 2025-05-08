@@ -10,7 +10,6 @@ import os
 import subprocess
 import serial
 
-#
 print("...Imports complete")
 #identify os
 os_name = sys.platform
