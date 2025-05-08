@@ -512,6 +512,11 @@ class MainFrame(customtkinter.CTkFrame):
                     self.temp_value.configure(font=("Arial",18))
                     self.temp_value.grid(column=1, row=4,sticky="w")
 
+                    self.max_temp = 0.0
+                    self.temp_value_max = customtkinter.CTkLabel(self, text=self.max_temp,fg_color=background_gray_2,bg_color=background_gray_2,anchor="w",text_color="white")
+                    self.temp_value_max.configure(font=("Arial",18))
+                    self.temp_value_max.grid(column=2, row=4,sticky="e")
+
                     self.update_performance()
 
                 def update_cpu(self):
@@ -530,7 +535,11 @@ class MainFrame(customtkinter.CTkFrame):
 
                 def upddate_temp(self):
                     if os_name == "linux":
+                        if round(psutil.sensors_temperatures()["cpu_thermal"][0].current,1) > self.max_temp:
+                            self.max_temp = round(psutil.sensors_temperatures()["cpu_thermal"][0].current,1)      
                         self.temp_value.configure(text= str(round(psutil.sensors_temperatures()["cpu_thermal"][0].current,1)) + " C")
+                        self.temp_value_max.configure(text="(MAX:)"+str(self.max_temp)+" C")
+
                     else:
                         self.temp_value.configure(text="N/A")
 
