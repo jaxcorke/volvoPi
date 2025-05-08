@@ -18,8 +18,8 @@ versionTagString = "volvoPi"
 os_name = sys.platform
 
 #Colors
-background_gray = "#141414"
-background_gray_2 = "#292929"
+background_gray = "#292929"
+background_gray_2 = "#474747"
  
 #ASSET PATHS <START>........................................................ 
 
@@ -145,11 +145,11 @@ class TopBarFrame(customtkinter.CTkFrame):
 
         #Exit button
         self.exit_button = customtkinter.CTkButton(self,height=34,width=34,command=exitButtonPress,text="X",text_color="red",
-                                                   corner_radius=4,fg_color="blue",bg_color="transparent",font=("CTkFont",28,"bold"),hover=False)
+                                                   corner_radius=4,fg_color="blue",bg_color="transparent",font=("Arial",28,"bold"),hover=False)
         self.exit_button.pack(side = "right",padx=5,pady=3)
 
         #Message Bar
-        self.message_bar = customtkinter.CTkLabel(self,bg_color="black",fg_color="gray4",text="Messages",text_color="black",font=("CTkFont",18),corner_radius=8,anchor="e")
+        self.message_bar = customtkinter.CTkLabel(self,bg_color="black",fg_color="gray4",text="Messages",text_color="black",font=("Arial",18),corner_radius=8,anchor="e")
         self.message_bar.pack(side="right",pady=3,padx=(30,5),fill="x",expand=True)
 
         #Status symbols
@@ -225,17 +225,17 @@ class ExitMenuFrame(customtkinter.CTkFrame):
         self.grid_rowconfigure(0,weight=1)
         self.grid_rowconfigure(1,weight=1)
 
-        self.exit_menu_prompt = customtkinter.CTkLabel(self,height=200,font=("CTkFont",34))
+        self.exit_menu_prompt = customtkinter.CTkLabel(self,height=200,font=("Arial",34))
         self.exit_menu_prompt.configure(corner_radius=12,fg_color="white",text_color="black")
         self.exit_menu_prompt.configure(text="Are you sure you want to exit?\n(Warning: A keyboard is required upon exiting)")
         self.exit_menu_prompt.grid(column=0,row=0,columnspan=2,padx=40,pady=10,sticky="nsew")
 
         self.exit_menu_cancel_button = customtkinter.CTkButton(self, width=110, height=120, text="Cancel",command=exitCancelExit,fg_color="blue",hover=False)
-        self.exit_menu_cancel_button.configure(font=("CTkFont",34))
+        self.exit_menu_cancel_button.configure(font=("Arial",34))
         self.exit_menu_cancel_button.grid(column=0,row=1,padx=40,pady=40,sticky="ew")
 
         self.exit_menu_exit_button = customtkinter.CTkButton(self, width=110,height=120,text="Exit",command=exitConfirmExit,fg_color="dark red",hover=False)
-        self.exit_menu_exit_button.configure(font=("CTkFont",34))
+        self.exit_menu_exit_button.configure(font=("Arial",34))
         self.exit_menu_exit_button.grid(column=1,row=1,padx=40,pady=40,sticky="ew")
 
 class ButtonPanelFrame(customtkinter.CTkFrame):
@@ -277,43 +277,43 @@ class MainFrame(customtkinter.CTkFrame):
                 
 
                 self.climate_label = customtkinter.CTkLabel(self.climate_label_frame, fg_color=background_gray,bg_color=background_gray,
-                                                            text_color="white",text="Climate:",anchor="w",font=("CTkFont",42),width=250)
+                                                            text_color="white",text="Climate:",anchor="w",font=("Arial",42),width=250)
                 self.climate_label.pack(pady=4,padx=8,side="left")
 
                 #Fan
                 self.fan_label = customtkinter.CTkLabel(self,fg_color=background_gray,bg_color=background_gray,text="Fan:"
-                                                        ,text_color="white",font=("CTkFont",28),anchor="w")
+                                                        ,text_color="white",font=("Arial",28),anchor="w")
                 self.fan_label.grid(column=0,row=1,sticky="ew",padx=(8,0),pady=(8,0))
 
                 self.fan_value = customtkinter.CTkLabel(self,fg_color=background_gray,bg_color=background_gray,text="???"
-                                                        ,text_color="white",font=("CTkFont",28),anchor="e")
+                                                        ,text_color="white",font=("Arial",28),anchor="e")
                 self.fan_value.grid(column=1,row=1,sticky="ew",padx=(0,5),pady=(8,0))
 
                 #Temperature
                 self.temp_label = customtkinter.CTkLabel(self,fg_color=background_gray,bg_color=background_gray,text="Temp:"
-                                                        ,text_color="white",font=("CTkFont",28),anchor="w")
+                                                        ,text_color="white",font=("Arial",28),anchor="w")
                 self.temp_label.grid(column=0,row=2,sticky="ew",padx=(8,0),pady=(4,0))
 
                 self.temp_value = customtkinter.CTkLabel(self,fg_color=background_gray,bg_color=background_gray,text="???"
-                                                        ,text_color="white",font=("CTkFont",28),anchor="e")
+                                                        ,text_color="white",font=("Arial",28),anchor="e")
                 self.temp_value.grid(column=1,row=2,sticky="ew",padx=(0,5),pady=(4,0))
 
                 #AC status
                 self.ac_label = customtkinter.CTkLabel(self,fg_color=background_gray,bg_color=background_gray,text="A/C:"
-                                                        ,text_color="white",font=("CTkFont",28),anchor="w")
+                                                        ,text_color="white",font=("Arial",28),anchor="w")
                 self.ac_label.grid(column=0,row=3,sticky="ew",padx=(8,0),pady=(4,0))
 
                 self.ac_value = customtkinter.CTkLabel(self,fg_color=background_gray,bg_color=background_gray,text="???"
-                                                        ,text_color="white",font=("CTkFont",28),anchor="e")
+                                                        ,text_color="white",font=("Arial",28),anchor="e")
                 self.ac_value.grid(column=1,row=3,sticky="ew",padx=(0,5),pady=(4,0))
 
                 #Compressor status
                 self.compressor_label = customtkinter.CTkLabel(self,fg_color=background_gray,bg_color=background_gray,text="Compressor:"
-                                                                ,text_color="white",font=("CTkFont",28),anchor="w")
+                                                                ,text_color="white",font=("Arial",28),anchor="w")
                 self.compressor_label.grid(column=0,row=4,sticky="ew",padx=(8,0),pady=(4,0))
 
                 self.compressor_value = customtkinter.CTkLabel(self,fg_color=background_gray,bg_color=background_gray,text="???"
-                                                        ,text_color="white",font=("CTkFont",28),anchor="e")
+                                                        ,text_color="white",font=("Arial",28),anchor="e")
                 self.compressor_value.grid(column=1,row=4,sticky="ew",padx=(0,5),pady=(4,0))
 
         class Clock(customtkinter.CTkFrame):
@@ -322,10 +322,10 @@ class MainFrame(customtkinter.CTkFrame):
                 #Clock
                 self.configure(bg_color="black",fg_color="black")
                 #clock time
-                self.clock_time = customtkinter.CTkLabel(self, height=40,width=100,text="__:__",bg_color="black",fg_color="black",text_color="white",font=("CTkFont",72))
+                self.clock_time = customtkinter.CTkLabel(self, height=40,width=100,text="__:__",bg_color="black",fg_color="black",text_color="white",font=("Comfortaa",72,"bold"))
                 self.clock_time.place(y=0,relx=0.5,anchor="n")
                 #clock date
-                self.clock_date = customtkinter.CTkLabel(self,text="date",font=("CTkFont",32),fg_color="black",bg_color="black",text_color="gray40")
+                self.clock_date = customtkinter.CTkLabel(self,text="date",font=("Arial",32),fg_color="black",bg_color="black",text_color="gray40")
                 self.clock_date.place(anchor="n",relx=0.5,y=70)
 
             def set_clock(self, time, date):
@@ -373,31 +373,31 @@ class MainFrame(customtkinter.CTkFrame):
             for i in range(0,4):
                 self.grid_rowconfigure(i,weight=1,uniform="grid_group")
 
-            self.menu_settings = customtkinter.CTkButton(self,text="Settings",bg_color="transparent",fg_color="blue",font=("CTkFont",24),command=self.master.open_settings,hover=False)
+            self.menu_settings = customtkinter.CTkButton(self,text="Settings",bg_color="transparent",fg_color="blue",font=("Arial",24),command=self.master.open_settings,hover=False)
             self.menu_settings.configure(image=settings_icon,compound="top")
             self.menu_settings.grid(column=0,row=0,padx=(20,10),pady=10,sticky="nsew")
 
-            self.menu_wireless = customtkinter.CTkButton(self,text="Wireless",bg_color="transparent",fg_color="blue",font=("CTkFont",24),command=self.master.open_connections,hover=False)
+            self.menu_wireless = customtkinter.CTkButton(self,text="Wireless",bg_color="transparent",fg_color="blue",font=("Arial",24),command=self.master.open_connections,hover=False)
             self.menu_wireless.configure(image=wireless_icon,compound="top")
             self.menu_wireless.grid(column=1,row=0,padx=10,pady=10,sticky="nsew")
 
-            self.menu_debug = customtkinter.CTkButton(self,text="Debug",bg_color="transparent",fg_color="blue",font=("CTkFont",24),command=self.master.open_debug,hover=False)
+            self.menu_debug = customtkinter.CTkButton(self,text="Debug",bg_color="transparent",fg_color="blue",font=("Arial",24),command=self.master.open_debug,hover=False)
             self.menu_debug.configure(image=debug_icon,compound="top")
             self.menu_debug.grid(column=2,row=0,padx=10,pady=10,sticky="nsew")
 
-            self.menu_map = customtkinter.CTkButton(self,text="Map",bg_color="transparent",fg_color="blue",font=("CTkFont",24),command=self.master.open_map,hover=False)
+            self.menu_map = customtkinter.CTkButton(self,text="Map",bg_color="transparent",fg_color="blue",font=("Arial",24),command=self.master.open_map,hover=False)
             self.menu_map.configure(image=map_icon,compound="top")
             self.menu_map.grid(column=2,row=1,padx=10,pady=10,sticky="nsew")
 
-            self.menu_can = customtkinter.CTkButton(self,text="CAN View",bg_color="transparent",fg_color="blue",font=("CTkFont",24),command=self.master.open_can,hover=False)
+            self.menu_can = customtkinter.CTkButton(self,text="CAN View",bg_color="transparent",fg_color="blue",font=("Arial",24),command=self.master.open_can,hover=False)
             self.menu_can.configure(image=can_icon,compound="top")
             self.menu_can.grid(column=0,row=1,padx=(20,10),pady=10,sticky="nsew")
 
-            self.menu_serial = customtkinter.CTkButton(self,text="Serial",bg_color="transparent",fg_color="blue",font=("CTkFont",24),command=self.master.open_serial,hover=False)
+            self.menu_serial = customtkinter.CTkButton(self,text="Serial",bg_color="transparent",fg_color="blue",font=("Arial",24),command=self.master.open_serial,hover=False)
             self.menu_serial.configure(image=serial_icon,compound="top")
             self.menu_serial.grid(column=1,row=1,padx=10,pady=10,sticky="nsew")
 
-            self.menu_show_screen = customtkinter.CTkButton(self, text="Screens",bg_color="transparent",fg_color="blue",font=("CTkFont",24),command=None,hover=False)
+            self.menu_show_screen = customtkinter.CTkButton(self, text="Screens",bg_color="transparent",fg_color="blue",font=("Arial",24),command=None,hover=False)
             self.menu_show_screen.grid(column=0,row=2,padx=(20,10),pady=10,sticky="nsew")
 
             self.menu_quick_settings_frame = customtkinter.CTkFrame(self,bg_color=background_gray,fg_color=background_gray_2)
@@ -428,44 +428,52 @@ class MainFrame(customtkinter.CTkFrame):
                     self.columnconfigure(1,weight=1)
 
                     self.performance_label = customtkinter.CTkLabel(self,bg_color=background_gray_2,fg_color=background_gray_2,text="Performance:",anchor="w",text_color="white")
-                    self.performance_label.configure(font=("CTkFont",24))
+                    self.performance_label.configure(font=("Arial",24,"bold"))
                     self.performance_label.grid(column=0,row=0,sticky="new",columnspan=3,pady=(0,6))
 
                     self.cpu_usage_label = customtkinter.CTkLabel(self, text="CPU:",fg_color=background_gray_2,bg_color=background_gray_2,anchor="w",text_color="white")
-                    self.cpu_usage_label.configure(font=("CTkFont",18))
+                    self.cpu_usage_label.configure(font=("Arial",18))
                     self.cpu_usage_label.grid(column=0, row=1,sticky="w",padx=(10,20))
 
                     self.cpu_percent_value = customtkinter.CTkLabel(self, text="??",fg_color=background_gray_2,bg_color=background_gray_2,anchor="w",text_color="white")
-                    self.cpu_percent_value.configure(font=("CTkFont",18))
+                    self.cpu_percent_value.configure(font=("Arial",18))
                     self.cpu_percent_value.grid(column=1, row=1,sticky="w")
 
                     self.cpu_freq_value = customtkinter.CTkLabel(self, text="??",fg_color=background_gray_2,bg_color=background_gray_2,anchor="w",text_color="white")
-                    self.cpu_freq_value.configure(font=("CTkFont",18))
+                    self.cpu_freq_value.configure(font=("Arial",18))
                     self.cpu_freq_value.grid(column=2, row=1,sticky="e")
 
                     self.memory_usage_label = customtkinter.CTkLabel(self, text="RAM:",fg_color=background_gray_2,bg_color=background_gray_2,anchor="w",text_color="white")
-                    self.memory_usage_label.configure(font=("CTkFont",18))
+                    self.memory_usage_label.configure(font=("Arial",18))
                     self.memory_usage_label.grid(column=0, row=2,sticky="w",padx=(10,20))
 
                     self.memory_percent_value = customtkinter.CTkLabel(self, text="??",fg_color=background_gray_2,bg_color=background_gray_2,anchor="w",text_color="white")
-                    self.memory_percent_value.configure(font=("CTkFont",18))
+                    self.memory_percent_value.configure(font=("Arial",18))
                     self.memory_percent_value.grid(column=1, row=2,sticky="w")
 
                     self.memory_fraction_value = customtkinter.CTkLabel(self, text="??",fg_color=background_gray_2,bg_color=background_gray_2,anchor="w",text_color="white")
-                    self.memory_fraction_value.configure(font=("CTkFont",18))
+                    self.memory_fraction_value.configure(font=("Arial",18))
                     self.memory_fraction_value.grid(column=2, row=2,sticky="e")
 
                     self.disk_usage_label = customtkinter.CTkLabel(self, text="Disk:",fg_color=background_gray_2,bg_color=background_gray_2,anchor="w",text_color="white")
-                    self.disk_usage_label.configure(font=("CTkFont",18))
+                    self.disk_usage_label.configure(font=("Arial",18))
                     self.disk_usage_label.grid(column=0, row=3,sticky="w",padx=(10,20))
 
                     self.disk_percent_value = customtkinter.CTkLabel(self, text="??",fg_color=background_gray_2,bg_color=background_gray_2,anchor="w",text_color="white")
-                    self.disk_percent_value.configure(font=("CTkFont",18))
+                    self.disk_percent_value.configure(font=("Arial",18))
                     self.disk_percent_value.grid(column=1, row=3,sticky="w")
 
                     self.disk_fraction_value = customtkinter.CTkLabel(self, text="??",fg_color=background_gray_2,bg_color=background_gray_2,anchor="w",text_color="white")
-                    self.disk_fraction_value.configure(font=("CTkFont",18))
+                    self.disk_fraction_value.configure(font=("Arial",18))
                     self.disk_fraction_value.grid(column=2, row=3,sticky="e")
+
+                    self.temp_label = customtkinter.CTkLabel(self, text="Temp:",fg_color=background_gray_2,bg_color=background_gray_2,anchor="w",text_color="white")
+                    self.temp_label.configure(font=("Arial",18))
+                    self.temp_label.grid(column=0, row=4,sticky="w",padx=(10,20))
+
+                    self.temp_value = customtkinter.CTkLabel(self, text="??",fg_color=background_gray_2,bg_color=background_gray_2,anchor="w",text_color="white")
+                    self.temp_value.configure(font=("Arial",18))
+                    self.temp_value.grid(column=1, row=4,sticky="w")
 
 
                 def update_cpu(self):
@@ -482,10 +490,17 @@ class MainFrame(customtkinter.CTkFrame):
                     self.disk_percent_value.configure(text=disk_value_percent)
                     self.disk_fraction_value.configure(text=disk_value_fraction)
 
+                def upddate_temp(self):
+                    if os_name == "linux":
+                        self.temp_value.configure(text=str(psutil.sensors_temperatures()[0]))
+                    else:
+                        self.temp_value.configure(text="N/A")
+
                 def update_performance(self):
                     self.update_cpu()
                     self.update_memory()
                     self.update_disk()
+                    self.upddate_temp()
 
             class ThreadingFrame(customtkinter.CTkFrame):
                 def __init__(self, master, **kwargs):
@@ -494,11 +509,11 @@ class MainFrame(customtkinter.CTkFrame):
                     self.columnconfigure(0, weight=1)
 
                     self.threading_label = customtkinter.CTkLabel(self,bg_color=background_gray_2,fg_color=background_gray_2,text="Active Threads:",anchor="w",text_color="white")
-                    self.threading_label.configure(font=("CTkFont",24))
+                    self.threading_label.configure(font=("Arial",24,"bold"))
                     self.threading_label.grid(column=0,row=0,sticky="new")
 
                     self.threading_count = customtkinter.CTkLabel(self,bg_color=background_gray_2,fg_color=background_gray_2,text="?",anchor="w",text_color="white")
-                    self.threading_count.configure(font=("CTkFont",20))
+                    self.threading_count.configure(font=("Arial",20))
                     self.threading_count.grid(column=1,row=0,sticky="nw",padx=(0,5))
 
                     self.threading_list = customtkinter.CTkTextbox(self, bg_color=background_gray_2, fg_color=background_gray,activate_scrollbars=True,text_color="white",height=100)
@@ -523,7 +538,7 @@ class MainFrame(customtkinter.CTkFrame):
                 self.columnconfigure(1, weight=1,uniform="equal")
                 self.rowconfigure(1, weight=1)
 
-                self.debug_label = customtkinter.CTkLabel(self, text="Debug & Sys Info:",bg_color=background_gray,fg_color=background_gray_2,font=("CTkFont",30),text_color="white",anchor="w")
+                self.debug_label = customtkinter.CTkLabel(self, text="Debug & Sys Info:",bg_color=background_gray,fg_color=background_gray_2,font=("Arial",30,"bold"),text_color="white",anchor="w")
                 self.debug_label.configure(corner_radius=6)
                 self.debug_label.grid(column=0,row=0,sticky="nsew",columnspan=2,padx=10,pady=(10,0))
 
