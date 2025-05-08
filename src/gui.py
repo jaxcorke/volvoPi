@@ -604,24 +604,41 @@ class MainFrame(customtkinter.CTkFrame):
 
                     self.threading_count = customtkinter.CTkLabel(self,bg_color=background_gray_2,fg_color=background_gray_2,text="?",anchor="w",text_color="white")
                     self.threading_count.configure(font=("Arial",20))
-                    self.threading_count.grid(column=1,row=0,sticky="sw",padx=(0,5))
+                    self.threading_count.grid(column=1,row=0,sticky="sw",padx=(0,10))
+
+                    self.threading_button = customtkinter.CTkButton(self,bg_color=background_gray_2,fg_color="blue",anchor="center",text_color="white",width=60,command=self.thread_button_press)
+                    self.threading_button.configure(font=("Arial",12,"bold"),text="pause",hover=False)
+                    self.threading_button.grid(column=2,row=0,sticky="sw",padx=(0,5))
 
                     self.threading_list = customtkinter.CTkTextbox(self, bg_color=background_gray_2, fg_color=background_gray,activate_scrollbars=True,text_color="white",height=100)
-                    self.threading_list.grid(column=0,row=1,sticky="sew",columnspan=2)
+                    self.threading_list.grid(column=0,row=1,sticky="sew",columnspan=3)
+
+                    self.enable_update_threads = True
 
                     self.show_threads()
 
-                def show_threads(self):
-                    self.threading_count.configure(text= "(" + str(threading.active_count()) + ")")
-                    self.threading_list.configure(state="normal")
-                    self.threading_list.delete(0.0, 'end')
+                def thread_button_press(self):
+                    self.enable_update_threads = not self.enable_update_threads
+                    if not self.enable_update_threads:
+                        self.threading_button.configure(text="start",fg_color="dark red")
+                    else:
+                        self.threading_button.configure(text="pause",fg_color="dark green")
 
-                    for thread in threading.enumerate():
-                        thread_entry = str(thread.native_id) + ": " + str(thread.name)
-                        self.threading_list.insert('end', thread_entry + "\n")
-                    
-                    self.threading_list.insert('end', "\n")
-                    self.threading_list.configure(state="disabled")
+                def show_threads(self):
+                    if self.enable_update_threads:
+                        self.threading_count.configure(text= "(" + str(threading.active_count()) + ")")
+                        self.threading_list.configure(state="normal")
+                        save_last_list = self.threading_list.get(0.0, 'end')
+                        self.threading_list.delete(0.0, 'end')
+
+                        for thread in threading.enumerate():
+                            thread_entry = str(thread.native_id) + ": " + str(thread.name)
+                            self.threading_list.insert('end', thread_entry + "\n")
+                        
+                        self.threading_list.insert('end', "\n")
+                        self.threading_list.configure(state="disabled")
+                    else:
+                        pass
 
             def __init__(self, master, **kwargs):
                 super().__init__(master, **kwargs)
