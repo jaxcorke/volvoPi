@@ -492,7 +492,7 @@ class MainFrame(customtkinter.CTkFrame):
 
                 def upddate_temp(self):
                     if os_name == "linux":
-                        self.temp_value.configure(text= str(psutil.sensors_temperatures()["cpu_thermal"[0].current])) + "C"
+                        self.temp_value.configure(text= str(round(psutil.sensors_temperatures()["cpu_thermal"][0].current),1) + " C")
                     else:
                         self.temp_value.configure(text="N/A")
 
