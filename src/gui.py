@@ -582,7 +582,9 @@ class MainFrame(customtkinter.CTkFrame):
                         anchor="n",
                         segmented_button_fg_color=background_gray,
                         segmented_button_selected_color="blue",
-                        segmented_button_unselected_color="black"
+                        segmented_button_unselected_color="black",
+                        segmented_button_unselected_hover_color="black",
+                        segmented_button_selected_hover_color="blue"
                         )
                     self.add("CPU")
                     self.add("RAM")
@@ -604,7 +606,7 @@ class MainFrame(customtkinter.CTkFrame):
                     self.threading_count.configure(font=("Arial",20))
                     self.threading_count.grid(column=1,row=0,sticky="sw",padx=(0,5))
 
-                    self.threading_list = customtkinter.CTkTextbox(self, bg_color=background_gray_2, fg_color=background_gray,activate_scrollbars=True,text_color="white",height=150)
+                    self.threading_list = customtkinter.CTkTextbox(self, bg_color=background_gray_2, fg_color=background_gray,activate_scrollbars=True,text_color="white",height=100)
                     self.threading_list.grid(column=0,row=1,sticky="sew",columnspan=2)
 
                     self.show_threads()
@@ -656,7 +658,7 @@ class MainFrame(customtkinter.CTkFrame):
                         self.threading_frame.show_threads()
                         self.performance_frame.update_performance()
                         print("updateDebug")
-                        time.sleep(0.2)
+                        time.sleep(0.35)
                     else:
                         time.sleep(0.8)
 
