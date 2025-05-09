@@ -12,10 +12,16 @@ import psutil
 import tkintermapview
 import cv2
 import uptime
+import io
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 #GLOBAL VARIABLES <START>........................................................   
 versionTagString = "volvoPi"
 os_name = sys.platform
+initial_time = time.time()
 
 #Colors
 background_gray = "#292929"
@@ -76,17 +82,21 @@ def exitCancelExit():
 #Button Panel
 
 def home_button_press():
+    save_home = root.main_frame.home_frame
     root.main_frame.close_all()
     root.main_frame.home_frame.pack(fill="both",expand=True)
     
 def vehicle_button_press():
+    save_vehicle = root.main_frame.vehicle_frame
     root.main_frame.close_all()
 
 def cam_button_press():
+    save_cam = root.main_frame.cam_frame
     root.main_frame.close_all()
     root.main_frame.cam_frame.pack(fill="both",expand=True)
 
 def menu_button_press():
+    save_menu = root.main_frame.menu_frame
     root.main_frame.close_all()
     root.main_frame.menu_frame.pack(fill="both",expand=True)
 
@@ -148,6 +158,15 @@ def camera_loop():
             else:
                 camera.open(0)
         time.sleep(0)
+
+#Graphing
+
+def fig_to_pil(fig):
+    buf = io.BytesIO()
+    fig.savefig(buf, format='png')
+    buf.seek(0)
+    img = Image.open(buf)
+    return img
 
 #GLOBAL FUNCTIONS <END>........................................................ 
 
@@ -464,7 +483,7 @@ class MainFrame(customtkinter.CTkFrame):
 
                     self.performance_label = customtkinter.CTkLabel(self,bg_color=background_gray_2,fg_color=background_gray_2,text="Performance:",anchor="w",text_color="white")
                     self.performance_label.configure(font=("Arial",24,"bold"))
-                    self.performance_label.grid(column=0,row=0,sticky="new",columnspan=3,pady=(0,6))
+                    self.performance_label.grid(column=0,row=0,sticky="new",columnspan=3,pady=(0,2))
 
                     self.cpu_usage_label = customtkinter.CTkLabel(self, text="CPU:",fg_color=background_gray_2,bg_color=background_gray_2,anchor="w",text_color="white")
                     self.cpu_usage_label.configure(font=("Arial",18))
@@ -517,61 +536,81 @@ class MainFrame(customtkinter.CTkFrame):
 
                     self.pids_label = customtkinter.CTkLabel(self, text="PIDs:",fg_color=background_gray_2,bg_color=background_gray_2,anchor="w",text_color="white")
                     self.pids_label.configure(font=("Arial",18))
-                    self.pids_label.grid(column=0, row=5,sticky="w",padx=(10,20),pady=(15,0))
+                    self.pids_label.grid(column=0, row=5,sticky="w",padx=(10,20),pady=(0,0))
 
                     self.pids_count = customtkinter.CTkLabel(self, text="??",fg_color=background_gray_2,bg_color=background_gray_2,anchor="w",text_color="white")
                     self.pids_count.configure(font=("Arial",18))
-                    self.pids_count.grid(column=1, row=5,sticky="w",pady=(15,0))
+                    self.pids_count.grid(column=1, row=5,sticky="w",pady=(0,0))
 
                     self.uptime_label = customtkinter.CTkLabel(self, text="Uptime:",fg_color=background_gray_2,bg_color=background_gray_2,anchor="w",text_color="white")
                     self.uptime_label.configure(font=("Arial",18))
-                    self.uptime_label.grid(column=2, row=5,sticky="e",padx=(10,20),pady=(15,0))
+                    self.uptime_label.grid(column=2, row=5,sticky="e",padx=(10,20),pady=(0,0))
 
                     self.uptime_value = customtkinter.CTkLabel(self, text="??",fg_color=background_gray_2,bg_color=background_gray_2,anchor="w",text_color="white")
                     self.uptime_value.configure(font=("Arial",18))
-                    self.uptime_value.grid(column=3, row=5,sticky="e",padx=(0,0),pady=(15,0))
+                    self.uptime_value.grid(column=3, row=5,sticky="e",padx=(0,0),pady=(0,0))
 
                     self.update_performance()
 
-                def update_cpu(self):
-                    self.cpu_percent_value.configure(text=str((psutil.cpu_percent())) + "%")
-                    self.cpu_freq_value.configure(text= "(" + (str(int(psutil.cpu_freq()[0])/1000) + "GHz)"))
-
-                def update_memory(self):
-                    self.memory_percent_value.configure(text=str(psutil.virtual_memory().percent) + "%")  
-                    self.memory_fraction_value.configure(text= "(" + str(round((psutil.virtual_memory().total - psutil.virtual_memory().available)/(1024**3),1)) + "/" + str(round(((psutil.virtual_memory().total)/(1024**3)),1)) + " GB)")
-
-                def update_disk(self):
-                    disk_value_percent = str(psutil.disk_usage(os.path.join('/')).percent) + "%"
-                    disk_value_fraction = "(" + str(round((psutil.disk_usage(os.path.join('/')).used / 1024**3),1)) + "/" + str(int((psutil.disk_usage((os.path.join('/'))).total / 1024**3))) + "GB)"
-                    self.disk_percent_value.configure(text=disk_value_percent)
-                    self.disk_fraction_value.configure(text=disk_value_fraction)
-
-                def upddate_temp(self):
-                    if os_name == "linux":
-                        if round(psutil.sensors_temperatures()["cpu_thermal"][0].current,1) > self.max_temp:
-                            self.max_temp = round(psutil.sensors_temperatures()["cpu_thermal"][0].current,1)      
-                        self.temp_value.configure(text= str(round(psutil.sensors_temperatures()["cpu_thermal"][0].current,1)) + " C")
-                        self.temp_value_max.configure(text="(MAX:"+str(self.max_temp)+" C)")
-
-                    else:
-                        self.temp_value.configure(text="N/A")
-
-                def update_tasks(self):
-                    self.pids_count.configure(text=len(psutil.pids()))
+                def get_performance_stats(self):
+                    current_time = time.time()
                     uptime_days=str(int((uptime.uptime()/3600)/24)).zfill(2)
                     uptime_hours=str(int((uptime.uptime()/3600)%24)).zfill(2)
                     uptime_minutes=str(int((uptime.uptime()%3600)/60)).zfill(2)
                     uptime_seconds=str(int((uptime.uptime()%3600)%60)).zfill(2)
                     uptime_text=uptime_days+":"+uptime_hours+":"+uptime_minutes+":"+uptime_seconds
-                    self.uptime_value.configure(text=uptime_text)
+                    
+                    cpu_percent = psutil.cpu_percent()
+                    cpu_freq = (psutil.cpu_freq()[0])/1000
+
+                    memory_percent = psutil.virtual_memory().percent 
+                    memory_fraction_neum = round((psutil.virtual_memory().total - psutil.virtual_memory().available)/(1024**3),1)  
+                    memory_fraction_denom = round(((psutil.virtual_memory().total)/(1024**3)),1)
+                    memory_fraction_str = str(memory_fraction_neum)+"/"+str(memory_fraction_denom)
+
+                    disk_percent = psutil.disk_usage(os.path.join('/')).percent
+                    disk_fraction_neum = round((psutil.disk_usage(os.path.join('/')).used / 1024**3),1)
+                    disk_fraction_denom = int((psutil.disk_usage((os.path.join('/'))).total / 1024**3))
+                    disk_fraction_str = str(disk_fraction_neum)+"/"+str(disk_fraction_denom)
+
+                    if os_name == "linux":
+                        current_temp = round(psutil.sensors_temperatures()["cpu_thermal"][0].current,1)
+                        if current_temp > self.max_temp:
+                            self.max_temp = current_temp
+                    else:
+                        current_temp = 0.0
+
+                    pids_count = len(psutil.pids())
+
+                    performance_stats = {
+                        "current_time": current_time,
+                        "uptime": (uptime_text, uptime_days, uptime_hours, uptime_minutes, uptime_seconds),
+                        "cpu_percent": cpu_percent,
+                        "cpu_freq": cpu_freq,
+                        "mem_percent": memory_percent,
+                        "mem_fraction": memory_fraction_str,
+                        "disk_percent": disk_percent, 
+                        "disk_fraction": disk_fraction_str,
+                        "temp_current": current_temp, 
+                        "temp_max": self.max_temp,
+                        "pids": pids_count
+                    }
+                    
+                    return(performance_stats)
 
                 def update_performance(self):
-                    self.update_cpu()
-                    self.update_memory()
-                    self.update_disk()
-                    self.upddate_temp()
-                    self.update_tasks()
+                    current_stats = self.get_performance_stats()
+
+                    self.cpu_percent_value.configure(text=str(current_stats["cpu_percent"])+"%")
+                    self.cpu_freq_value.configure(text="("+str(current_stats["cpu_freq"])+" GHz)")
+                    self.memory_percent_value.configure(text=str(current_stats["mem_percent"])+"%")
+                    self.memory_fraction_value.configure(text="("+str(current_stats["mem_fraction"])+" GB)")
+                    self.disk_percent_value.configure(text=str(current_stats["disk_percent"])+"%")
+                    self.disk_fraction_value.configure(text="("+str(current_stats["disk_fraction"])+" GB)")
+                    self.temp_value.configure(text=str(current_stats["temp_current"])+" C")
+                    self.temp_value_max.configure(text="(MAX: "+str(current_stats["temp_max"])+" C)")
+                    self.pids_count.configure(text=current_stats["pids"])
+                    self.uptime_value.configure(text=current_stats["uptime"][0])
 
             class GraphingTabs(customtkinter.CTkTabview):
                 def __init__(self, master, **kwargs):
@@ -590,7 +629,31 @@ class MainFrame(customtkinter.CTkFrame):
                     self.add("RAM")
                     self.add("DISK")
                     self.add("TEMP")
-                    self.set("CPU")
+                    self.set("CPU") 
+
+                    self.cpu_graph_label = customtkinter.CTkLabel(self.tab("CPU"), text="",fg_color=("black"))
+                    self.cpu_graph_label.pack(fill="both",expand=True)
+
+                    mem_graph_label = customtkinter.CTkLabel(self.tab("RAM"), text="",fg_color=("black"))
+                    mem_graph_label.pack(fill="both",expand=True) 
+
+                    disk_graph_label = customtkinter.CTkLabel(self.tab("DISK"), text="",fg_color=("black"))
+                    disk_graph_label.pack(fill="both",expand=True)
+
+                    temp_graph_label = customtkinter.CTkLabel(self.tab("TEMP"), text="",fg_color=("black"))
+                    temp_graph_label.pack(fill="both",expand=True)              
+
+                def draw_cpu(self, data):
+                    pass
+
+                def draw_mem(self, data):
+                    pass
+
+                def draw_disk(self, data):
+                    pass
+
+                def draw_temp(self, data):
+                    pass
 
             class ThreadingFrame(customtkinter.CTkFrame):
                 def __init__(self, master, **kwargs):
@@ -606,11 +669,11 @@ class MainFrame(customtkinter.CTkFrame):
                     self.threading_count.configure(font=("Arial",20))
                     self.threading_count.grid(column=1,row=0,sticky="sw",padx=(0,10))
 
-                    self.threading_button = customtkinter.CTkButton(self,bg_color=background_gray_2,fg_color="blue",anchor="center",text_color="white",width=60,command=self.thread_button_press)
+                    self.threading_button = customtkinter.CTkButton(self,bg_color=background_gray_2,fg_color="green",anchor="center",text_color="white",width=60,command=self.thread_button_press)
                     self.threading_button.configure(font=("Arial",12,"bold"),text="pause",hover=False)
                     self.threading_button.grid(column=2,row=0,sticky="sw",padx=(0,5))
 
-                    self.threading_list = customtkinter.CTkTextbox(self, bg_color=background_gray_2, fg_color=background_gray,activate_scrollbars=True,text_color="white",height=100)
+                    self.threading_list = customtkinter.CTkTextbox(self, bg_color=background_gray_2, fg_color=background_gray,activate_scrollbars=False,text_color="white",height=85)
                     self.threading_list.grid(column=0,row=1,sticky="sew",columnspan=3)
 
                     self.enable_update_threads = True
@@ -621,8 +684,10 @@ class MainFrame(customtkinter.CTkFrame):
                     self.enable_update_threads = not self.enable_update_threads
                     if not self.enable_update_threads:
                         self.threading_button.configure(text="start",fg_color="dark red")
+                        self.threading_list._scrollbars_activated = True
                     else:
                         self.threading_button.configure(text="pause",fg_color="dark green")
+                        self.threading_list._scrollbars_activated = False
 
                 def show_threads(self):
                     if self.enable_update_threads:
@@ -654,9 +719,9 @@ class MainFrame(customtkinter.CTkFrame):
                 #Left Panel
                 self.left_frame = customtkinter.CTkFrame(self, bg_color=background_gray,fg_color=background_gray_2,corner_radius=6)
                 self.performance_frame = self.PerformanceFrame(self.left_frame)
-                self.performance_frame.pack(side="top",fill="x",padx=10,pady=(10,0))
+                self.performance_frame.pack(side="top",fill="x",padx=10,pady=(6,0))
                 self.threading_frame = self.ThreadingFrame(self.left_frame)
-                self.threading_frame.pack(side="bottom",fill="x",padx=10,pady=(10,10))
+                self.threading_frame.pack(side="bottom",fill="x",padx=10,pady=(6,10))
                 
                 self.performance_tabs = self.GraphingTabs(self.left_frame)
                 self.performance_tabs.pack(side="bottom",fill="both",expand=True,padx=10,pady=(0,0))
@@ -669,15 +734,45 @@ class MainFrame(customtkinter.CTkFrame):
 
                 self.right_frame.grid(column=1,row=1,pady=10,padx=10,sticky="nsew")
 
+                self.graphing_data = [0]*30
+                self.graphing_data_time = [0]*30
+                self.graphing_data_values = [0]*30
+
+            def collect_graph_data(self):
+                self.graphing_data.insert(0, self.performance_frame.get_performance_stats()) 
+                if len(self.graphing_data) >= 31:
+                    self.graphing_data.pop()
+                return(self.graphing_data)
+
             def update_debug(self):
                 while(True):
                     if root.main_frame.submenus_frame.debug_frame.winfo_ismapped():
                         self.threading_frame.show_threads()
-                        self.performance_frame.update_performance()
-                        print("updateDebug")
-                        time.sleep(0.35)
+                        self.performance_frame.update_performance()                      
+                        self.collect_graph_data()
+                        time.sleep(0.3)
                     else:
-                        time.sleep(0.8)
+                        self.performance_frame.update_performance()
+                        self.collect_graph_data()
+                        time.sleep(2)
+                 
+                    self.graphing_data_time.insert(0, self.graphing_data[0]["current_time"])
+                    self.graphing_data_values.insert(0, self.graphing_data[0]["cpu_percent"])
+                    if len(self.graphing_data_time) >= 31:
+                        self.graphing_data_time.pop()
+                    if len(self.graphing_data_values) >= 31:
+                        self.graphing_data_values.pop()
+
+                    plt.clf()
+                    fig, ax = plt.subplots(figsize=(10,5),frameon=False)
+                    plt.ylim(1,101)
+                    ax.plot(elapsed_time, root.main_frame.submenus_frame.debug_frame.graphing_data_values)
+                    plt.savefig("plotImg.png",dpi=300)
+                    ctk_img = customtkinter.CTkImage(dark_image=Image.open("plotImg.png"), size=(500,250))
+                    self.performance_tabs.cpu_graph_label.configure(image=ctk_img)
+                    save_ctk_img = ctk_img
+
+                    
 
         class CANFrame(customtkinter.CTkFrame):
             def __init__(self, master, **kwargs):
@@ -835,12 +930,24 @@ camera_thread.start()
 
 #mainloop tasks
 
+
+
+elapsed_time = [0]*30
+
 def main_loop():
     #Home>Clock
     if root.main_frame.home_frame.winfo_ismapped():
         root.main_frame.home_frame.clock.update_clock()
 
-    #print(len(psutil.pids()))
+    for i in range(0, len(root.main_frame.submenus_frame.debug_frame.graphing_data_time) - 1):
+        if not root.main_frame.submenus_frame.debug_frame.graphing_data_time[i] == 0:
+            elapsed_time[i] = root.main_frame.submenus_frame.debug_frame.graphing_data_time[i] - initial_time
+        else:
+            elapsed_time[i] = 0
+
+    
+    #print(elapsed_time)
+    
 
     root.after(20, main_loop)
 
