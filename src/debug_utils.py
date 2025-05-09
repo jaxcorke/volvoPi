@@ -101,17 +101,14 @@ def split_graphing_data():
 
 app = customtkinter.CTk()
 app.title("Graphing Test")
-app.geometry("1200x600")
-app.attributes("-fullscreen", True)
+app.geometry("500x500")
+#app.attributes("-fullscreen", True)
 cpu_label = customtkinter.CTkLabel(app, text="",fg_color="gray16",bg_color="black")
 cpu_label.pack(fill="both",expand=True,padx=10,pady=10)
 mem_label = customtkinter.CTkLabel(app, text="",fg_color="gray16",bg_color="black")
 mem_label.pack(fill="both",expand=True,padx=10,pady=10)
 temp_label = customtkinter.CTkLabel(app, text="",fg_color="gray16",bg_color="black")
 temp_label.pack(fill="both",expand=True,padx=10,pady=10)
-
-def after_loop():       
-    app.after(100, after_loop)
 
 def collect():
     while True:
@@ -120,9 +117,9 @@ def collect():
         time.sleep(0.1)
 
 def plots():
-    while True:
-        plt.title("CPU")
+    while True:     
         plt.figure(figsize=(5,2))
+        plt.title("CPU")
         plt.ylim(1,100)
         plt.style.use("dark_background")
         plt.grid(axis="y",color="gray",lw=1)     
@@ -132,8 +129,8 @@ def plots():
         cpu_label.configure(image=ctk_cpu_img)
         save_ctk_cpu_img = ctk_cpu_img
 
-        plt.title("RAM")
         plt.figure(figsize=(5,2))
+        plt.title("RAM")
         plt.ylim(1,100)
         plt.style.use("dark_background")
         plt.grid(axis="y",color="gray",lw=1)     
@@ -143,8 +140,8 @@ def plots():
         mem_label.configure(image=ctk_mem_img)
         save_ctk_mem_img = ctk_mem_img
 
-        plt.title("TEMP")
         plt.figure(figsize=(5,2))
+        plt.title("TEMP")
         plt.ylim(1,100)
         plt.style.use("dark_background")
         plt.grid(axis="y",color="gray",lw=1)     
@@ -154,16 +151,15 @@ def plots():
         temp_label.configure(image=ctk_temp_img)
         save_ctk_temp_img = ctk_temp_img
 
-        time.sleep(0.1)
         plt.close("all")
+        time.sleep(0.1)
 
 collect_debug_thread = threading.Thread(target=collect, daemon=True)
 collect_debug_thread.start()
 
-plot_debug_thread = threading.Thread(target=plots, daemon=True)
-plot_debug_thread.start()
+plotting_thread = threading.Thread(target=plots, daemon=True)
+plotting_thread.start()
 
-#app.after(100, after_loop)
 app.mainloop()
 
 
